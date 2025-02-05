@@ -307,8 +307,12 @@ public static long serialVersionUID = 1L;
             
             case "Eliminar" -> {
                 JSONObject jsonResp = new JSONObject();
-                cDao.eliminar(Integer.parseInt(request.getParameter("id")));
-                jsonResp.put("success", true);
+                if(cDao.eliminar(Integer.parseInt(request.getParameter("id"))) == true){
+                    jsonResp.put("success", true);
+                }else{
+                    jsonResp.put("success", false);
+                    jsonResp.put("ErrorMessage", "El cliente que está tratando de eliminar está vinculado al historial de ventas, no es posible eliminarlo");
+                }
                 PrintWriter out = response.getWriter();
                 out.print(jsonResp.toString());
                 out.flush();
@@ -330,7 +334,22 @@ public static long serialVersionUID = 1L;
             }
             
             case "Filtrar" -> {
-                
+                response.setContentType("application/json");
+                response.setCharacterEncoding("UTF-8");
+                PrintWriter out = response.getWriter();
+                JSONArray jsArr = new JSONArray();
+                List<Cliente> clientes = cDao.filtrar(request.getParameter("filtro"));
+                for (Cliente cliente1 : clientes) {
+                    JSONObject jsObj = new JSONObject();
+                    jsObj.put("id", cliente1.getIdCliente());
+                    jsObj.put("dni", cliente1.getDni());
+                    jsObj.put("nombres", cliente1.getNombres());
+                    jsObj.put("direccion", cliente1.getDireccion());
+                    jsObj.put("estado", cliente1.getEstado());
+                    jsArr.put(jsObj);
+                }
+                out.print(jsArr.toString());
+                out.flush();
             }
             
             case "ActualizarEstado" -> {
@@ -379,10 +398,14 @@ public static long serialVersionUID = 1L;
                 response.setContentType("application/json");
                 response.setCharacterEncoding("UTF-8");
                 JSONObject jsonResponse = new JSONObject();
+                int id = Integer.parseInt(request.getParameter("idProducto"));
+                if(pDao.eliminar(id)){
+                    jsonResponse.put("success", true);
+                }else{
+                    jsonResponse.put("success", false);
+                    jsonResponse.put("ErrorMessage", "No es posible eliminar el articulo con id: " + id + " porque hay ventas asociadas en el inventario");
+                }
                 
-                pDao.eliminar(Integer.parseInt(request.getParameter("idProducto")));
-                
-                jsonResponse.put("success", true);
                 PrintWriter out = response.getWriter();
                 out.print(jsonResponse.toString());
             }
@@ -400,7 +423,6 @@ public static long serialVersionUID = 1L;
                     jsonResponse.put("precio", p.getPrecio());
                     jsonResponse.put("stock", p.getStock());
                     jsonResponse.put("estado", p.getEstado());
-                    
                     jsonArray.put(jsonResponse);
                 }
                 PrintWriter out = response.getWriter();

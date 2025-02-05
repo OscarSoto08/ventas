@@ -311,7 +311,7 @@
                     </div>
                 </div>
                 <div class="col-md-4 text-end">
-                    <button class="btn btn-primary w-100 nuevo" data-bs-toggle="modal" data-bs-target="#modalProducto">
+                    <button class="btn btn-primary w-100 nuevo" data-bs-toggle="modal" data-bs-target="#modalProducto" onclick="nuevoAction()">
                         <i class="bi bi-plus-lg me-2"></i>Nuevo Producto
                     </button>
                 </div>
@@ -366,10 +366,10 @@
                                 </div>
                             </td>
                             <td class="text-end">
-                                <button class="btn btn-warning btn-sm me-2 editar" data-bs-toggle="modal" data-bs-target="#modalProducto">
+                                <button class="btn btn-warning btn-sm me-2 editar" onclick="editarAction(this)">
                                     <i class="bi bi-pencil"></i>
                                 </button>
-                                <button class="btn btn-danger btn-sm eliminar" data-bs-toggle="modal" data-bs-target="#modalProducto">
+                                <button class="btn btn-danger btn-sm eliminar" onclick="eliminarAction(this)">
                                     <i class="bi bi-trash"></i>
                                 </button>
                             </td>
@@ -390,23 +390,33 @@
 </div>
             
 <div class="modal fade" id="modalProducto" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="modalTitulo"></h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalTitulo"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="modal-body">
+                    <input type='hidden' id='productoId' name='productoId' >
+                    <div id='modalMensaje'></div>
                 </div>
-                <div class="modal-body" id="modal-body">
-                        <input type='hidden' id='productoId' name='productoId' >
-                        <div id='modalMensaje'></div>
-                    </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                    <button id="modalBoton" class="btn btn-primary"></button>
-                </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button id="modalBoton" class="btn btn-primary"></button>
             </div>
         </div>
     </div>
+</div>
+            
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="liveToast" class="toast align-items-center text-bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="d-flex">
+      <div class="toast-body" id="toast-body">
+      </div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
+  </div>
+</div>
 
 <script>
     function cambiarEstado(id){
@@ -422,9 +432,7 @@
             }
         });
     }
-    
-    $(document).ready(function(){
-        let modal_form =  "<form id='modalFormulario'>" +
+    const  modal_form =  "<form id='modalFormulario'>" +
                             "<input type='hidden' id='productoId' name='productoId' >" +
                             "<div id='modalMensaje'></div>" +
                             "<div class='mb-3'>" +
@@ -440,48 +448,50 @@
                                 "<input type='number' id='productoStock' class='form-control'>" +
                             "</div>" +
                         "</form>";
+    
+function editarAction (obj) {
+    let id = $(obj).closest("tr").find(".idProducto").text().replace("#",""); // Get ID from table row
+    let nombre = $(obj).closest("tr").find(".nombres").text(); // Get name from table row
+    let precio = $(obj).closest("tr").find(".precio").text().replace("$",""); // Get price from table row
+    let stock = $(obj).closest("tr").find(".stock").text(); // Get stock from table row
 
+    $("#modal-body").html(modal_form); // Corrected: Use modal-body ID
+    $("#modalTitulo").text("Editar Producto");
+    $("#modalBoton").text("Actualizar").removeClass("btn-danger").addClass("btn-primary");
+    $("#productoId").val(id);
+    $("#productoNombre").val(nombre);
+    $("#productoPrecio").val(precio);
+    $("#productoStock").val(stock);
+    $("#modalFormulario").attr("data-action", "actualizar"); // Set data-action attribute
+    $("#modalProducto").modal("show");
+}
 
-        $(".nuevo").click(function () {
+function nuevoAction() {
             $("#modalTitulo").text("Agregar Nuevo Producto");
             $("#modal-body").html(modal_form); // Corrected: Use modal-body ID
             $("#modalBoton").text("Guardar").removeClass("btn-danger").addClass("btn-primary");
             $("#modalFormulario").attr("data-action", "guardar"); // Set data-action attribute
-        });
+            $("#modalProducto").modal("show");
+}
+        
+function eliminarAction(obj) {
+    let id = $(obj).closest("tr").find(".idProducto").text().replace("#",""); // Get ID from table row
+    let nombre = $(obj).closest("tr").find(".nombres").text(); // Get name from table row
 
-        $(".editar").click(function () {
-            let id = $(this).closest("tr").find(".idProducto").text().replace("#",""); // Get ID from table row
-            let nombre = $(this).closest("tr").find(".nombres").text(); // Get name from table row
-            let precio = $(this).closest("tr").find(".precio").text().replace("$",""); // Get price from table row
-            let stock = $(this).closest("tr").find(".stock").text(); // Get stock from table row
+    $("#modalTitulo").text("Eliminar Producto");
+    $("#modalBoton").text("Eliminar").removeClass("btn-primary").addClass("btn-danger");
 
-            $("#modal-body").html(modal_form); // Corrected: Use modal-body ID
-            $("#modalTitulo").text("Editar Producto");
-            $("#modalBoton").text("Actualizar").removeClass("btn-danger").addClass("btn-primary");
-            $("#productoId").val(id);
-            $("#productoNombre").val(nombre);
-            $("#productoPrecio").val(precio);
-            $("#productoStock").val(stock);
-            $("#modalFormulario").attr("data-action", "actualizar"); // Set data-action attribute
+    html = "<form id='modalFormulario'><input type='hidden' id='productoId' /> <div id='modalMensaje'></div></form>";
 
-        });
+    $("#modal-body").html(html);
 
-        $(".eliminar").click(function () {
-            let id = $(this).closest("tr").find(".idProducto").text().replace("#",""); // Get ID from table row
-            let nombre = $(this).closest("tr").find(".nombres").text(); // Get name from table row
-
-            $("#modalTitulo").text("Eliminar Producto");
-            $("#modalBoton").text("Eliminar").removeClass("btn-primary").addClass("btn-danger");
-
-            html = "<form id='modalFormulario'><input type='hidden' id='productoId' /> <div id='modalMensaje'></div></form>";
-            
-            $("#modal-body").html(html);
-            
-            $("#productoId").val(id);
-            $("#modalMensaje").text("¿Seguro que deseas eliminar el producto '" + nombre +"'?");
-            $("#modalFormulario").attr("data-action", "eliminar"); // Set data-action attribute
-
-        });
+    $("#productoId").val(id);
+    $("#modalMensaje").text("¿Seguro que deseas eliminar el producto '" + nombre +"'?");
+    $("#modalFormulario").attr("data-action", "eliminar"); // Set data-action attribute
+    $("#modalProducto").modal("show");
+}
+    $(document).ready(function(){
+        
 
         $("#modalBoton").click(function() {
             let action = $("#modalFormulario").attr("data-action");
@@ -524,7 +534,14 @@
                     },
                     success: function(response) {
                         console.log("Success:", response);
-                        window.location.reload(); // Reload the page
+                        if(response.success === true){
+                            window.location.reload();
+                        }else{
+                            $("#modalProducto").modal("hide");
+                            errorToast = bootstrap.Toast.getOrCreateInstance($("#liveToast"));
+                            $("#toast-body").html("<p>"+response.ErrorMessage+"</p>");
+                            errorToast.show();
+                        }
                     },
                     error: function(error) {
                         console.error("Error:", error);
@@ -590,10 +607,10 @@
             "</div>" +
         "</td>" +
         "<td class='text-end'>" +
-            "<button class='btn btn-warning btn-sm me-2 editar' data-bs-toggle='modal' data-bs-target='#modalProducto'>" + // data-target corrected
+            "<button class='btn btn-warning btn-sm me-2 editar' onclick=\"editarAction(this)\">" + // data-target corrected
                 "<i class='bi bi-pencil'></i>" +
             "</button>" +
-            "<button class='btn btn-danger btn-sm eliminar' data-bs-toggle='modal' data-bs-target='#modalProducto'>" + // data-target corrected
+            "<button class='btn btn-danger btn-sm eliminar' onclick=\"eliminarAction(this)\">" + // data-target corrected
                 "<i class='bi bi-trash'></i>" +
             "</button>" +
         "</td>" +

@@ -153,6 +153,8 @@ public class ProductoDAO extends DAO<Producto>{
             resultado = st.execute();
         } catch (SQLException ex){
             errorMessage = String.format("No se pudo eliminar al producto con id: '%s', mensaje: '%s'", id, ex.getMessage());
+            System.err.println(errorMessage);
+            return false;
         } finally {
             instance.cerrarConexion();
         }

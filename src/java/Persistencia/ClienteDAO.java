@@ -104,13 +104,14 @@ public class ClienteDAO extends DAO<Cliente>{
     
     @Override
     public boolean editar(Cliente editado) {
-        sql = "UPDATE cliente SET Nombres = ?, Direccion = ?, Estado = ? WHERE idCliente = ?";
+        sql = "UPDATE cliente SET Nombres = ?, Direccion = ?, Estado = ?, Dni = ? WHERE idCliente = ?";
         try {
             st = getCnn().prepareStatement(sql);
             st.setString(1, editado.getNombres());
             st.setString(2, editado.getDireccion());
             st.setString(3, editado.getEstado());
-            st.setInt(4, editado.getIdCliente());
+            st.setString(4, editado.getDni());
+            st.setInt(5, editado.getIdCliente());
 
             int filasActualizadas = st.executeUpdate();
             return filasActualizadas > 0; // Devuelve true si se actualizó al menos una fila
@@ -132,14 +133,14 @@ public class ClienteDAO extends DAO<Cliente>{
         try {
             st = getCnn().prepareStatement(sql);
             st.setInt(1, id);
-            int filasEliminadas = st.executeUpdate();
-            return filasEliminadas > 0; // Devuelve true si se eliminó al menos una fila
+            st.executeUpdate();
+            return true;
         } catch (SQLException ex) {
             errorMessage = String.format(
                     "Error al eliminar el cliente con ID: %d, mensaje: '%s'", id, ex.getMessage()
             );
-            Logger.getLogger(ClienteDAO.class.getName()).log(Level.SEVERE, errorMessage, ex);
-            return false; // Devuelve false si hubo un error
+//            Logger.getLogger(ClienteDAO.class.getName()).log(Level.SEVERE, errorMessage, ex);
+            return false;
         } finally {
             instance.cerrarConexion();
         }
@@ -193,6 +194,29 @@ public class ClienteDAO extends DAO<Cliente>{
         } finally {
             instance.cerrarConexion();
         }
+    }
+    
+    public List<Cliente> filtrar(String filtro){
+        List<Cliente> clientes = new ArrayList<>();
+        sql = "SELECT idCliente, Dni, Nombres, Direccion, Estado FROM cliente WHERE Nombres LIKE ? ORDER BY Dni ASC;";
+        try {
+            st = getCnn().prepareStatement(sql);
+            st.setString(1, "%"+filtro+"%");
+            rs = st.executeQuery();
+            while(rs.next()){
+                int id = rs.getInt("idCliente");
+                String Dni = rs.getString("Dni");
+                String Nombres = rs.getString("Nombres");
+                String Direccion = rs.getString("Direccion");
+                String Estado = rs.getString("Estado");
+                clientes.add(new Cliente(id, Dni, Nombres, Direccion, Estado));
+            }
+        } 
+        catch (SQLException e) {
+            errorMessage = "ERROR AL FILTRAR CLIENTES, FILTRO: " + filtro +" \nMENSAJE: \n" + e.getMessage();
+            System.err.println(errorMessage);
+        } 
+        return clientes;
     }
     
 }

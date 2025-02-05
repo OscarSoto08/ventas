@@ -256,20 +256,13 @@
     <div class="card mb-4 animate__animated animate__fadeIn">
         <div class="card-body">
             <div class="row g-3 align-items-center">
-                <div class="col-md-6">
-                    <div class="search-box">
+                <div class="col-md-9">
+                    <div class="search-box d-flex g-3">
                         <i class="bi bi-search text-muted"></i>
                         <input type="text" id="searchInput" placeholder="Buscar clientes...">
                     </div>
                 </div>
-                <div class="col-md-3">
-                    <select class="form-select" id="estadoFilter">
-                        <option value="">Todos los estados</option>
-                        <option value="1">Activo</option>
-                        <option value="0">Inactivo</option>
-                    </select>
-                </div>
-                <div class="col-md-3 text-end">
+                <div class="col-md-3 mx-auto text-end">
                     <button type="button" id="btn-nuevo" class="btn btn-primary">
                         <i class="bi bi-plus-lg me-2"></i>Nuevo Cliente
                     </button>
@@ -293,7 +286,7 @@
                             <th class="text-end">Acciones</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="table-body">
                         <c:forEach var="cliente" items="${clientes}">
                             <tr class="align-middle">
                                 <td>
@@ -321,7 +314,7 @@
                                     </span>
                                 </td>
                                 <td class="text-end">
-                                    <button class="btn btn-light btn-sm me-2 btn-editar">
+                                    <button class="btn btn-light btn-sm me-2 btn-editar" onclick="editAction(this)">
                                         <i class="bi bi-pencil text-primary"></i>
                                     </button>
                                     <button class="btn btn-light btn-sm" onclick="modalEliminar(${cliente.getIdCliente()})">
@@ -455,14 +448,25 @@
       </div>
     </div>
   </div>
+
+
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+  <div id="liveToast" class="toast align-items-center text-bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true">
+  <div class="d-flex">
+    <div class="toast-body" id="toast-body">
+    </div>
+    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+  </div>
+</div>
+</div>
+
+
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
 <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
 <script>
-$(document).ready(function() { // Wrap in document ready for best practice
-
+    const modalDelete = new bootstrap.Modal(document.getElementById('modalEliminar'));
     function modalEliminar(id) {
-        const modalDelete = new bootstrap.Modal(document.getElementById('modalEliminar'));
         $("#modal-body-eliminar").attr("data-id", id);
         modalDelete.show();
     }
@@ -475,7 +479,14 @@ $(document).ready(function() { // Wrap in document ready for best practice
             dataType: "JSON",
             type: "POST",
             success: function (response) {
-                window.location.reload(); // Simplest: just reload the page
+                if(response.success === true){
+                    window.location.reload(); // Simplest: just reload the page
+                }else{
+                    errorToast = bootstrap.Toast.getOrCreateInstance($("#liveToast"));
+                    $("#toast-body").html("<p>"+response.ErrorMessage+"</p>");
+                    $("#modalEliminar").modal("hide");
+                    errorToast.show();
+                }
             },
             error: function (xhr, status, error) {
                 console.error(error);
@@ -491,8 +502,8 @@ $(document).ready(function() { // Wrap in document ready for best practice
         modal.show();
     });
 
-    $(".btn-editar").on("click", function () {
-        fila = $(this).closest("tr");
+    function editAction(obj) {
+        fila = $(obj).closest("tr");
         id = fila.find(".idCliente").text();
         nombres = fila.find(".nombres").text();
         direccion = fila.find(".direccion").text();
@@ -508,7 +519,7 @@ $(document).ready(function() { // Wrap in document ready for best practice
         $("#txt-submit-modal").text("Actualizar");
         const modal = new bootstrap.Modal(document.getElementById("clienteModal"));
         modal.show();
-    });
+    }
 
 
     $("#clienteForm").on("submit", function (event) {  // Use form submit event
@@ -561,7 +572,73 @@ $(document).ready(function() { // Wrap in document ready for best practice
             }
         });
     });
-});
+
+    const searchInput = $("#searchInput").keyup(function(){
+        val = searchInput.val();
+        if(val.length >= 3 || val.length === 0){
+            const data = {
+              menu: "cliente",
+              accion: "Filtrar",
+              filtro: val
+            };
+            $.ajax({
+                url: "Controlador",
+                type: "POST",
+                data: data,
+                dataType: 'JSON',
+                success: function(response){
+                    html = "";
+                    if(response.length > 0){
+                        response.forEach(function(producto){
+                            html += generateTableRow(producto);
+                        });
+                    }else{
+                        html += "<tr><td colspan='5'><h3>No se encontraron resultados.</h3></td></tr>";
+                    }
+                    $("#table-body").html(html);
+                },
+                error: function(xhr, status, error){
+                    console.error("Error: " + error);
+                    console.error("Status: " + status);
+                }
+            });
+        }
+    });
+    
+    function generateTableRow(cliente){
+        return "<tr class='align-middle'>" +
+        " <td>" +
+        " <div class='d-flex align-items-center'>" +
+        " <h6 class='dni'>" + cliente.dni + "</h6>" +
+        " </div>" +
+        " </td>" +
+        " <td>#<span class='idCliente'>" + cliente.id + "</span></td>" +
+        " <td>" +
+        " <div class='d-flex align-items-center'>" +
+        " <h6 class='mb-0 nombres'>" + cliente.nombres + "</h6>" +
+        " </div>" +
+        " </td>" +
+        " <td>" +
+        " <div class='d-flex align-items-center'>" +
+        " <h6 class='direccion'>" + cliente.direccion + "</h6>" +
+        " </div>" +
+        " </td>" +
+        " <td>" +
+        " <span class='badge bg-" + (cliente.estado === "1" ? 'success' : 'danger') + " bg-opacity-10 text-" + (cliente.estado === "1" ? 'success' : 'danger') + "'>" +
+        " <i class='bi bi-circle-fill me-1 small'></i>" +
+        " <span class='estado'>" + (cliente.estado === "1" ? 'Activo' : 'Inactivo') + "</span>" +
+        " </span>" +
+        " </td>" +
+        " <td class='text-end'>" +
+        " <button class='btn btn-light btn-sm me-2 btn-editar' onclick=\"editAction(this)\">" +
+        " <i class='bi bi-pencil text-primary'></i>" +
+        " </button>" +
+        " <button class='btn btn-light btn-sm' onclick=\"modalEliminar(" + cliente.id + ")\">" +
+        " <i class='bi bi-trash text-danger'></i>" +
+        " </button>" +
+        " </td>" +
+        "</tr>";
+    }
 </script>
 </body>
 </html>
