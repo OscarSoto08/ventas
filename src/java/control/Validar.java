@@ -7,7 +7,6 @@ package control;
 import Persistencia.EmpleadoDAO;
 import config.Seguridad;
 import java.io.IOException;
-import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -56,7 +55,8 @@ public class Validar extends HttpServlet {
 
             if(accion.equals("logout")){
                 if(session != null){
-                    session.invalidate();
+                    session.removeAttribute("empleado");
+                    session.invalidate(); 
                 }
                 response.sendRedirect("index.jsp");
             }

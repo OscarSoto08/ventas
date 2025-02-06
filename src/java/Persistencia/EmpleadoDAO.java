@@ -1,4 +1,4 @@
-package Persistencia;
+    package Persistencia;
 
 import java.util.List;
 import modelo.Empleado;

@@ -1,6 +1,13 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ page import="jakarta.servlet.jsp.*" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%
+    //    HttpSession sesion = request.getSession(false); // No crear una nueva sesión
+    //    if (sesion == null || sesion.getAttribute("empleado") == null) {
+    //        response.sendRedirect("index.jsp"); // Redirigir a la página de inicio de sesión
+    //    }
+%> 
+
 <!DOCTYPE html>
 <html lang="es">
 <head>

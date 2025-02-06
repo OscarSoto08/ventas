@@ -17,7 +17,7 @@
         <div class="container col-lg-4 mt-4">
             <div class="card col-sm-10">
                 <div class="card-body">
-                    <form class="form-sign" action="Validar" method="POST">
+                    <form class="form-sign" action="dashboard" method="POST">
                         <div class="form-group my-3 text-center">
                             <h3>Login</h3>
                             <img src="img/logo.png" alt="Logo ventas" width="100"/>

@@ -142,12 +142,6 @@ public static long serialVersionUID = 1L;
                         }
                         request.getRequestDispatcher("Controlador?menu=nuevaVenta");
                     }
-                    case "ActualizarProducto" -> {
-                        
-                    }
-                    case "EditarProducto" -> {
-                        
-                    }
                     case "EliminarProducto" -> {
                         int itemId = Integer.parseInt(request.getParameter("item"));
 

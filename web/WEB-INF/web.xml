@@ -1,5 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app version="6.0" xmlns="https://jakarta.ee/xml/ns/jakartaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd">
+    <filter>
+        <filter-name>Filtro</filter-name>
+        <filter-class>control.Filtro</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>Filtro</filter-name>
+        <url-pattern>/Clientes.jsp</url-pattern>
+        <url-pattern>/Empleado.jsp</url-pattern>
+        <url-pattern>/Producto.jsp</url-pattern>
+        <url-pattern>/RegistrarVenta.jsp</url-pattern>
+        <url-pattern>/Principal.jsp</url-pattern>
+    </filter-mapping>
     <servlet>
         <servlet-name>Validar</servlet-name>
         <servlet-class>control.Validar</servlet-class>
@@ -10,7 +22,7 @@
     </servlet>
     <servlet-mapping>
         <servlet-name>Validar</servlet-name>
-        <url-pattern>/Validar</url-pattern>
+        <url-pattern>/dashboard</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>Controlador</servlet-name>

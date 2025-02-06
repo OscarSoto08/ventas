@@ -104,7 +104,7 @@
                                     <th>Precio</th>
                                     <th>Cantidad</th>
                                     <th>Subtotal</th>
-                                    <th class="parte-01">Acciones</th>
+                                    <th class="parte-01"></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -117,7 +117,6 @@
                                         <td>${list.getCantidad()}</td>
                                         <td>$${list.getSubtotal()}</td>
                                         <td>
-                                            <a href="Controlador?menu=nuevaVenta&accion=EditarProducto&idProducto=${list.getItem()}" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i></a>
                                             <a href="Controlador?menu=nuevaVenta&accion=EliminarProducto&item=${list.getItem()}&idProducto=${list.getIdProducto()}" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></a>
                                         </td>
                                     </tr>

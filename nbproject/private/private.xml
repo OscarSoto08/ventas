@@ -3,16 +3,25 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
+            <file>file:/C:/Users/oscar/Documents/NetBeansProjects/sistema_ventas/src/java/modelo/Empleado.java</file>
             <file>file:/C:/Users/oscar/Documents/NetBeansProjects/sistema_ventas/src/java/Persistencia/ProductoDAO.java</file>
             <file>file:/C:/Users/oscar/Documents/NetBeansProjects/sistema_ventas/web/RegistrarVenta.jsp</file>
-            <file>file:/C:/Users/oscar/Documents/NetBeansProjects/sistema_ventas/web/index.jsp</file>
             <file>file:/C:/Users/oscar/Documents/NetBeansProjects/sistema_ventas/src/java/control/Controlador.java</file>
-            <file>file:/C:/Users/oscar/Documents/NetBeansProjects/sistema_ventas/src/java/Persistencia/DAO.java</file>
-            <file>file:/C:/Users/oscar/Documents/NetBeansProjects/sistema_ventas/web/Producto.jsp</file>
-            <file>file:/C:/Users/oscar/Documents/NetBeansProjects/sistema_ventas/src/java/modelo/Venta.java</file>
-            <file>file:/C:/Users/oscar/Documents/NetBeansProjects/sistema_ventas/src/java/Persistencia/ClienteDAO.java</file>
+            <file>file:/C:/Users/oscar/Documents/NetBeansProjects/sistema_ventas/web/Empleado.jsp</file>
+            <file>file:/C:/Users/oscar/Documents/NetBeansProjects/sistema_ventas/src/java/Persistencia/VentaDAO.java</file>
+            <file>file:/C:/Users/oscar/Documents/NetBeansProjects/sistema_ventas/src/java/config/Seguridad.java</file>
+            <file>file:/C:/Users/oscar/Documents/NetBeansProjects/sistema_ventas/src/java/control/Validar.java</file>
             <file>file:/C:/Users/oscar/Documents/NetBeansProjects/sistema_ventas/src/java/Persistencia/EmpleadoDAO.java</file>
             <file>file:/C:/Users/oscar/Documents/NetBeansProjects/sistema_ventas/src/java/config/ConexionMySQL.java</file>
+            <file>file:/C:/Users/oscar/Documents/NetBeansProjects/sistema_ventas/src/java/modelo/Cliente.java</file>
+            <file>file:/C:/Users/oscar/Documents/NetBeansProjects/sistema_ventas/src/java/config/ContratoDAO.java</file>
+            <file>file:/C:/Users/oscar/Documents/NetBeansProjects/sistema_ventas/web/Principal.jsp</file>
+            <file>file:/C:/Users/oscar/Documents/NetBeansProjects/sistema_ventas/web/Clientes.jsp</file>
+            <file>file:/C:/Users/oscar/Documents/NetBeansProjects/sistema_ventas/web/index.jsp</file>
+            <file>file:/C:/Users/oscar/Documents/NetBeansProjects/sistema_ventas/web/Producto.jsp</file>
+            <file>file:/C:/Users/oscar/Documents/NetBeansProjects/sistema_ventas/src/java/Persistencia/DAO.java</file>
+            <file>file:/C:/Users/oscar/Documents/NetBeansProjects/sistema_ventas/src/java/modelo/Venta.java</file>
+            <file>file:/C:/Users/oscar/Documents/NetBeansProjects/sistema_ventas/src/java/Persistencia/ClienteDAO.java</file>
         </group>
     </open-files>
 </project-private>

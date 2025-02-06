@@ -48,10 +48,9 @@
             <%= empleado.getNombre() %>
         </button>
         <ul class="dropdown-menu text-center">
-          <li><a class="dropdown-item" href="#">Action</a>
+<!--          <li><a class="dropdown-item" href="#">Action</a>-->
               <img src="img/usuario.png" alt="" width="70px"/></li>
-          <li><a class="dropdown-item" href="#">Action two</a></li>
-          <li><a class="dropdown-item" href="Validar?accion=logout">Salir</a></li>
+          <li><a class="dropdown-item" href="dashboard?accion=logout">Salir</a></li>
         </ul>
       </div>
   </div>
