@@ -40,6 +40,9 @@
         <li class="nav-item">
           <a style="margin-left: 10px; border: none;"  class="btn btn-outline-light" href="Controlador?menu=nuevaVenta" target="myFrame">Nueva Venta</a>
         </li>
+        <li class="nav-item">
+          <a style="margin-left: 10px; border: none;"  class="btn btn-outline-light" href="Controlador?menu=panelVentas" target="myFrame">Panel de ventas</a>
+        </li>
       </ul>
        </form> 
     </div>
@@ -55,7 +58,7 @@
       </div>
   </div>
 </nav>
-    <div class="m-4" style="height: 550px;">
+    <div class="m-4" style="height: 80vh">
         <iframe name="myFrame" style="height: 100%; width: 100%"></iframe>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>

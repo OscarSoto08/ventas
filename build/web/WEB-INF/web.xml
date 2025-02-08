@@ -11,6 +11,7 @@
         <url-pattern>/Producto.jsp</url-pattern>
         <url-pattern>/RegistrarVenta.jsp</url-pattern>
         <url-pattern>/Principal.jsp</url-pattern>
+        <url-pattern>/PanelVentas.jsp</url-pattern>
     </filter-mapping>
     <servlet>
         <servlet-name>Validar</servlet-name>

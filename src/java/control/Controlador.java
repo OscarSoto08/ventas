@@ -21,6 +21,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.text.DecimalFormat;
 import modelo.Cliente;
 import modelo.Empleado;
 import modelo.Producto;
@@ -55,6 +56,8 @@ public static long serialVersionUID = 1L;
     String accion;
     
     HttpSession session;
+    DecimalFormat df;
+    
     
     public Controlador() {
         this.listaProductos = new ArrayList<>();
@@ -62,6 +65,7 @@ public static long serialVersionUID = 1L;
         cDao = new ClienteDAO();
         pDao = new ProductoDAO();
         eDao = new EmpleadoDAO();
+        df = new DecimalFormat("#.00");
     }
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -102,6 +106,18 @@ public static long serialVersionUID = 1L;
             if(menu.equals("nuevaVenta")){
                 handleNuevaVenta(request, response);
             }
+            if(menu.equals("panelVentas")){
+                handlePanelVentas(request, response);
+            }
+    }
+    
+    public void handlePanelVentas(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
+        int clientesFrecuentes = vDao.ClientesFrecuentes();
+        int totalClientes = cDao.totalClientes();
+        double porcentajeClientesFrecuentes = ((double)clientesFrecuentes / totalClientes) *100;
+        request.setAttribute("ClientesFrecuentes", clientesFrecuentes);
+        request.setAttribute("porcentajeClientesFrecuentes", df.format(porcentajeClientesFrecuentes));
+        request.getRequestDispatcher("PanelVentas.jsp").forward(request, response);
     }
     
     public void handleNuevaVenta(HttpServletRequest request, HttpServletResponse response)
@@ -112,6 +128,7 @@ public static long serialVersionUID = 1L;
                         String Dni = request.getParameter("codigoCliente");
                         ClienteDAO cDao = new ClienteDAO();
                         setCliente(cDao.buscarPorDni(Dni));
+                        
                         request.getRequestDispatcher("Controlador?menu=nuevaVenta");
                     }
                     case "Buscar Producto" -> {

@@ -7,6 +7,28 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class VentaDAO extends DAO<Venta>{
+    
+    public int ClientesFrecuentes(){
+        // La cantidad de clientes que han realizado al menos 2 compras en el ultimo mes
+        sql = "select count(c.idCliente) as totalClientes from cliente c where c.IdCliente in (\n" +
+"    SELECT c1.IdCliente FROM cliente c1 JOIN ventas v ON c1.IdCliente = v.IdCliente WHERE v.FechaVentas BETWEEN DATE_ADD(CURDATE(), INTERVAL -1 MONTH) AND CURDATE() GROUP BY c1.IdCliente HAVING COUNT(v.IdVentas) >= 2 );";
+        int ClientesFrecuentes = 0;
+        try{
+            st = getCnn().prepareStatement(sql);
+            rs = st.executeQuery();
+            if(rs.next()){
+                ClientesFrecuentes = rs.getInt("totalClientes");
+            }
+        }catch(SQLException e){
+            errorMessage = "No se pudo realizar la consulta para La cantidad de clientes que han realizado al menos 2 compras en el ultimo mes, mensaje: " + e.getMessage();
+            System.err.println(errorMessage);
+        } finally {
+            instance.cerrarConexion();
+        }
+        return ClientesFrecuentes;
+    }
+    
+    
     public String generarSerie(){
         String serie = "";
         try{
