@@ -60,7 +60,7 @@
                         <h5 class="card-title text-primary"><i class="fas fa-user"></i> Datos del Cliente</h5>
                         <form action="Controlador?menu=nuevaVenta" method="post">
                             <div class="input-group mb-3">
-                                <input type="text" name="codigoCliente" class="form-control" value="${cliente.getDni()}" placeholder="Código" required/>
+                                <input type="text" name="codigoCliente" class="form-control" value="${cliente.getDni()}" placeholder="DNI" required/>
                                 <button type="submit" name="accion" value="Buscar Cliente" class="btn btn-outline-info"><i class="fas fa-search"></i></button>
                             </div>
                             <input type="text" name="nombresCliente" value="${cliente.getNombres()}" class="form-control mb-3" placeholder="Datos Cliente" readonly/>

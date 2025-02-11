@@ -1,4 +1,4 @@
-<%-- 
+  <%-- 
     Document   : Principal
     Created on : 17/01/2025, 12:22:59 p. m.
     Author     : oscar
@@ -41,7 +41,7 @@
           <a style="margin-left: 10px; border: none;"  class="btn btn-outline-light" href="Controlador?menu=nuevaVenta" target="myFrame">Nueva Venta</a>
         </li>
         <li class="nav-item">
-          <a style="margin-left: 10px; border: none;"  class="btn btn-outline-light" href="Controlador?menu=panelVentas" target="myFrame">Panel de ventas</a>
+          <a style="margin-left: 10px; border: none;"  class="btn btn-outline-light" href="Controlador?menu=panelVentas&accion=Listar" target="myFrame">Panel de ventas</a>
         </li>
       </ul>
        </form> 

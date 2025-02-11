@@ -21,7 +21,10 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.sql.*;
 import java.text.DecimalFormat;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import modelo.Cliente;
 import modelo.Empleado;
 import modelo.Producto;
@@ -35,6 +38,11 @@ import org.json.JSONObject;
  */
 public class Controlador extends HttpServlet {
 public static long serialVersionUID = 1L;
+
+    ProductoController productoController = new ProductoController();
+    ClienteController clienteController = new ClienteController();
+    EmpleadoController empleadoController = new EmpleadoController();
+    VentaController ventaController = new VentaController();
     
     int item = 0;
     double total = 0.0;
@@ -77,7 +85,7 @@ public static long serialVersionUID = 1L;
      * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+            throws ServletException, IOException, SQLException {
         
             menu = request.getParameter("menu");    
             accion = request.getParameter("accion");
@@ -111,17 +119,18 @@ public static long serialVersionUID = 1L;
             }
     }
     
-    public void handlePanelVentas(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
-        int clientesFrecuentes = vDao.ClientesFrecuentes();
-        int totalClientes = cDao.totalClientes();
-        double porcentajeClientesFrecuentes = ((double)clientesFrecuentes / totalClientes) *100;
-        request.setAttribute("ClientesFrecuentes", clientesFrecuentes);
-        request.setAttribute("porcentajeClientesFrecuentes", df.format(porcentajeClientesFrecuentes));
-        request.getRequestDispatcher("PanelVentas.jsp").forward(request, response);
+    public void handlePanelVentas(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException{
+        if(accion != null){
+            switch (accion) {
+                case "Listar" -> ventaController.ListarVentas(request, response);
+                case "IngresosPorMes" -> ventaController.IngresosPorMes(request, response);
+                case "VentasPorProducto" -> ventaController.VentasPorProducto(request, response);
+            }
+        }
     }
     
     public void handleNuevaVenta(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException{
+            throws ServletException, IOException, SQLException{
          if(accion != null) {
                     switch(accion){
                     case "Buscar Cliente" -> {
@@ -242,18 +251,13 @@ public static long serialVersionUID = 1L;
     }
     
     public void handleEmpleado(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException{
+            throws ServletException, IOException, SQLException{
         EmpleadoDAO edao = new EmpleadoDAO();
                 int id;
                 String dni, nombre, correo, usuario, estado, telefono;
                 Empleado emp;
                 switch(accion){
-                    case "Listar" -> {
-                        List<Empleado> lista = edao.leerTodos();
-                        request.setAttribute("empleados", lista);
-                        request.getRequestDispatcher("Empleado.jsp").forward(request, response);
-                        break;
-                    } 
+                    case "Listar" -> empleadoController.ListarEmpleado(request, response);
                     case "Editar" -> {
                         emp = edao.leer(Integer.parseInt(request.getParameter("idEmpleado")));
                         request.setAttribute("empleado", emp);
@@ -293,167 +297,28 @@ public static long serialVersionUID = 1L;
     }
     
     public void handleCliente(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException{
-        switch(accion){
-            case "Listar" -> {
-                List<Cliente> clientes = cDao.leerTodos();
-                request.setAttribute("clientes", clientes);
-                request.setAttribute("activos", cDao.clientesActivos());
-                request.setAttribute("total", cDao.totalClientes());
-                request.getRequestDispatcher("Clientes.jsp").forward(request, response);
-            }
-            
-            case "Agregar" -> {
-                JSONObject jsonResp = new JSONObject();
-                String nombres = request.getParameter("nombres");
-                String dni = request.getParameter("dni");
-                String direccion = request.getParameter("direccion");
-                String estado = request.getParameter("estado");
-                cDao.insertar(new Cliente(dni, nombres, direccion, estado));
-                jsonResp.put("success", true);
-                PrintWriter out = response.getWriter();
-                out.print(jsonResp.toString());
-                out.flush();
-            }
-            
-            case "Eliminar" -> {
-                JSONObject jsonResp = new JSONObject();
-                if(cDao.eliminar(Integer.parseInt(request.getParameter("id"))) == true){
-                    jsonResp.put("success", true);
-                }else{
-                    jsonResp.put("success", false);
-                    jsonResp.put("ErrorMessage", "El cliente que está tratando de eliminar está vinculado al historial de ventas, no es posible eliminarlo");
-                }
-                PrintWriter out = response.getWriter();
-                out.print(jsonResp.toString());
-                out.flush();
-            }
-            
-            case "Actualizar" -> {
-                int id = Integer.parseInt(request.getParameter("id"));
-                String nombres = request.getParameter("nombres");
-                String dni = request.getParameter("dni");
-                String direccion = request.getParameter("direccion");
-                String estado = request.getParameter("estado");
-                
-                JSONObject jsonResp = new JSONObject();
-                cDao.editar(new Cliente( id, dni, nombres, direccion, estado));
-                jsonResp.put("success", true);
-                PrintWriter out = response.getWriter();
-                out.print(jsonResp.toString());
-                out.flush();
-            }
-            
-            case "Filtrar" -> {
-                response.setContentType("application/json");
-                response.setCharacterEncoding("UTF-8");
-                PrintWriter out = response.getWriter();
-                JSONArray jsArr = new JSONArray();
-                List<Cliente> clientes = cDao.filtrar(request.getParameter("filtro"));
-                for (Cliente cliente1 : clientes) {
-                    JSONObject jsObj = new JSONObject();
-                    jsObj.put("id", cliente1.getIdCliente());
-                    jsObj.put("dni", cliente1.getDni());
-                    jsObj.put("nombres", cliente1.getNombres());
-                    jsObj.put("direccion", cliente1.getDireccion());
-                    jsObj.put("estado", cliente1.getEstado());
-                    jsArr.put(jsObj);
-                }
-                out.print(jsArr.toString());
-                out.flush();
-            }
-            
-            case "ActualizarEstado" -> {
-                
-            }
+            throws ServletException, IOException, SQLException{
+        if(accion != null){
+            switch(accion){
+                case "Listar" -> clienteController.listarProductos(request, response);
+                case "Agregar" -> clienteController.agregarCliente(request, response);
+                case "Eliminar" -> clienteController.eliminarCliente(request, response);
+                case "Actualizar" -> clienteController.actualizarCliente(request, response);
+                case "Filtrar" -> clienteController.filtrarCliente(request, response);
+            }    
         }
     }
     
     public void handleProducto(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException{
-        switch(accion){
-            case "Listar" -> {
-                List<Producto> productos = pDao.leerTodos();
-                request.setAttribute("productos", productos);
-                request.setAttribute("productosActivos", pDao.activos());
-                request.setAttribute("totalProductos", pDao.totalProductos());
-                request.setAttribute("totalVentas", vDao.totalVentas());
-                request.getRequestDispatcher("Producto.jsp").forward(request, response);
-            }
-            
-            case "Insertar" -> {
-                String nombre = request.getParameter("nombres");
-                double precio = Double.parseDouble(request.getParameter("precio"));
-                int stock = Integer.parseInt(request.getParameter("stock"));
-                pDao.insertar(new Producto(nombre, precio, stock, "1"));
-                response.sendRedirect("Controlador?menu=producto&accion=Listar");
-            }
-            
-            case "Actualizar" -> {
-                int id = Integer.parseInt(request.getParameter("productoId"));
-                String nombre = request.getParameter("nombres");
-                double precio = Double.parseDouble(request.getParameter("precio"));
-                int stock = Integer.parseInt(request.getParameter("stock"));
-                
-                JSONObject jsonResponse = new JSONObject();
-                response.setContentType("application/json");
-                response.setCharacterEncoding("UTF-8");
-                pDao.editar(new Producto(id, nombre, precio, stock, "1"));
-                jsonResponse.put("success", true);
-                PrintWriter out = response.getWriter();
-                out.print(jsonResponse.toString());
-                out.flush();
-            }
-            
-            case "Eliminar" ->{
-                response.setContentType("application/json");
-                response.setCharacterEncoding("UTF-8");
-                JSONObject jsonResponse = new JSONObject();
-                int id = Integer.parseInt(request.getParameter("idProducto"));
-                if(pDao.eliminar(id)){
-                    jsonResponse.put("success", true);
-                }else{
-                    jsonResponse.put("success", false);
-                    jsonResponse.put("ErrorMessage", "No es posible eliminar el articulo con id: " + id + " porque hay ventas asociadas en el inventario");
-                }
-                
-                PrintWriter out = response.getWriter();
-                out.print(jsonResponse.toString());
-            }
-            
-            case "Filtrar" -> {
-                response.setContentType("application/json");
-                response.setCharacterEncoding("UTF-8");
-                JSONArray jsonArray = new JSONArray();
-                List<Producto> productos = pDao.filtrar(request.getParameter("filtro"));
-                
-                for(Producto p : productos){
-                    JSONObject jsonResponse = new JSONObject();
-                    jsonResponse.put("idProducto", p.getIdProducto());
-                    jsonResponse.put("nombres", p.getNombres());
-                    jsonResponse.put("precio", p.getPrecio());
-                    jsonResponse.put("stock", p.getStock());
-                    jsonResponse.put("estado", p.getEstado());
-                    jsonArray.put(jsonResponse);
-                }
-                PrintWriter out = response.getWriter();
-                out.print(jsonArray.toString());
-                out.flush();
-            }
-            
-            case "CambiarEstado" -> {
-                response.setContentType("application/json");
-                response.setCharacterEncoding("UTF-8");
-                JSONObject jsonResp = new JSONObject();
-                int id = Integer.parseInt(request.getParameter("idProducto"));
-                Producto p = pDao.leer(id);
-                String estadoNuevo = ("1".equals(p.getEstado())) ? "0" : "1";
-                pDao.cambiarEstado(estadoNuevo, id);
-                jsonResp.put("success", true);
-                jsonResp.put("activos", pDao.activos());
-                PrintWriter out = response.getWriter();
-                out.print(jsonResp.toString());
-                out.flush();
+            throws ServletException, IOException, SQLException{
+        if (accion != null) {
+            switch (accion) {
+                case "Listar" -> productoController.listarProductos(request, response);
+                case "Insertar" -> productoController.insertarProducto(request, response);
+                case "Actualizar" -> productoController.actualizarProducto(request, response);
+                case "Eliminar" -> productoController.eliminarProducto(request, response);
+                case "Filtrar" -> productoController.filtrarProductos(request, response);
+                case "CambiarEstado" -> productoController.cambiarEstadoProducto(request, response);
             }
         }
     }
@@ -469,7 +334,20 @@ public static long serialVersionUID = 1L;
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+    try {
         processRequest(request, response);
+    } catch(SQLIntegrityConstraintViolationException ex1){
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        JSONObject jsonResp = new JSONObject();
+        jsonResp.put("success", false);
+        jsonResp.put("ErrorMessage", "El elemento que está tratando de eliminar está vinculado al historial de ventas, no es posible eliminarlo");
+        PrintWriter out = response.getWriter();
+        out.print(jsonResp.toString());
+        out.flush();
+    } catch (SQLException ex) {
+        Logger.getLogger(Controlador.class.getName()).log(Level.SEVERE, null, ex);
+    }
     }
 
     /**
@@ -483,7 +361,20 @@ public static long serialVersionUID = 1L;
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+    try {
         processRequest(request, response);
+    } catch(SQLIntegrityConstraintViolationException ex1){
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        JSONObject jsonResp = new JSONObject();
+        jsonResp.put("success", false);
+        jsonResp.put("ErrorMessage", "El elemento que está tratando de eliminar está vinculado al historial de ventas, no es posible eliminarlo");
+        PrintWriter out = response.getWriter();
+        out.print(jsonResp.toString());
+        out.flush();
+    }catch (SQLException ex) {
+        Logger.getLogger(Controlador.class.getName()).log(Level.SEVERE, null, ex);
+    }
     }
 
     /**

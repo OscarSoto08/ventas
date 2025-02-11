@@ -5,16 +5,16 @@
 package config;
 
 import java.util.List;
-
+import java.sql.*;
 /**
  *
  * @author oscar
  * @param <Objeto>
  */
 public interface ContratoDAO <Objeto> {
-    public boolean insertar(Objeto nuevo);
-    public boolean eliminar(int id);
-    public List<Objeto> leerTodos();
-    public Objeto leer(int id);
-    public boolean editar(Objeto editado);
+    public boolean insertar(Objeto nuevo)throws SQLException ;
+    public boolean eliminar(int id) throws SQLException;
+    public List<Objeto> leerTodos() throws SQLException;
+    public Objeto leer(int id) throws SQLException;
+    public boolean editar(Objeto editado) throws SQLException;
 }

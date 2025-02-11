@@ -294,8 +294,9 @@
                 <div class="stats-icon">
                     <i class="bi bi-graph-up"></i>
                 </div>
-                <h5 class="text-muted mb-2">Total Ventas</h5>
-                <h3>$${totalVentas != null ? totalVentas : 0}</h3>
+                <h5 class="text-muted mb-2">Producto más rentable:</h5>
+                <p>${productoMasRentable.NombreProducto}</p>
+                <h3>$${productoMasRentable.Total}</h3>
             </div>
         </div>
     </div>

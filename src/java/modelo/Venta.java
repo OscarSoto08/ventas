@@ -11,6 +11,8 @@ package modelo;
 public class Venta {
     private int id;
     private int item;
+    private Empleado empleado;
+    private Cliente cliente;
     private int idCliente;
     private int idEmpleado;
     private int idProducto;
@@ -24,6 +26,8 @@ public class Venta {
     private String estado;
 
     public Venta() {
+        this.cliente = new Cliente();
+        this.empleado = new Empleado();
     }
 
     public Venta(int id, int item, int idCliente, int idEmpleado, int idProducto, String numSerie, String descripcion, String fecha, double precio, int cantidad, double subtotal, double monto, String estado) {
@@ -45,9 +49,20 @@ public class Venta {
     public Venta(int itemId) {
         this.item = itemId;
     }
+    public Empleado getEmpleado() {
+        return empleado;
+    }
 
-    public Venta(int item, int codigo, String descripcion, double precio, int cantidad, double subtotal) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public void setEmpleado(Empleado empleado) {
+        this.empleado = empleado;
+    }
+
+    public Cliente getCliente() {
+        return cliente;
+    }
+
+    public void setCliente(Cliente cliente) {
+        this.cliente = cliente;
     }
 
     public int getId() {
